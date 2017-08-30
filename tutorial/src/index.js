@@ -111,7 +111,7 @@ class Game extends React.Component {
       const desc = move ? `${(move % 2) ? 'X' : 'O'} moved to (${parseInt((step.currentPlace / 3), 10) + 1}, ${(step.currentPlace % 3) + 1})` : 'Game start'
       return (
         <li key={move}>
-          <button onClick={() => {this.jumpTo(move)}}>{desc}</button>
+          <button className={'step' + (move === this.state.stepNumber ? ' highlight' : '')} onClick={() => {this.jumpTo(move)}}>{desc}</button>
         </li>
       )
     })

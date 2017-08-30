@@ -48,3 +48,22 @@ ol, ul {
 .game-info {
   margin-left: 20px;
 }
+
+.step {
+  border: none;
+  color: #157efb;
+  background-color: #fff;
+  cursor: pointer;
+}
+
+.step:hover {
+  text-decoration: underline;
+}
+
+.step:focus {
+  outline: none;
+}
+
+.highlight {
+  color: #FF0B0B;
+}
