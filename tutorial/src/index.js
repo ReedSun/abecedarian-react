@@ -23,8 +23,8 @@ class Board extends React.Component {
     let rows = []
     for (let i = 0; i < 3; i++) {
       let row =[]
-      for (let j = 0; j < 3; j ++) {
-        row.push(this.renderSquare(j + (i * 3)))
+      for (let j = (i * 3); j < 3 * (i + 1); j ++) {
+        row.push(this.renderSquare(j))
       }
       rows.push(<div className="border=row" key={i}>{row}</div>)
     }
@@ -43,7 +43,8 @@ class Game extends React.Component {
         currentPlace: 0 // 当前这一步棋落子的位置（0~9）
       }],
       stepNumber: 0,
-      isXNext: true
+      isXNext: true,
+      historyReverse: false // 历史记录的顺序
     }
   }
 
@@ -95,10 +96,10 @@ class Game extends React.Component {
   }
 
   render() {
-    const history = this.state.history.slice()
+    let history = this.state.history.slice()
     const current = history[this.state.stepNumber]
     const winner = this.calculateWinner(current.squares)
-    const moves = history.map((step, move) => {
+    let moves = history.map((step, move) => {
       // move为数组中正在处理的当前元素的索引，即当前执行元素的index
       // step为当前执行此函数的history中的一项
       const desc = move ? `${(move % 2) ? 'X' : 'O'} moved to (${parseInt((step.currentPlace / 3), 10) + 1}, ${(step.currentPlace % 3) + 1})` : 'Game start'
@@ -109,6 +110,9 @@ class Game extends React.Component {
       )
     })
 
+    if (this.state.historyReverse) {
+      moves.reverse()
+    }
     let status
     if (winner) {
       status = 'Winner: ' + winner
@@ -122,6 +126,7 @@ class Game extends React.Component {
         </div>
         <div className="game-info">
           <div>{status}</div>
+          <button onClick={() => {this.setState({historyReverse: !this.state.historyReverse})}}>切换顺序</button>
           <ol>{moves}</ol>
         </div>
       </div>
