@@ -46,7 +46,8 @@ class Game extends React.Component {
     super()
     this.state = {
       history: [{
-        squares: Array(9).fill(null)
+        squares: Array(9).fill(null),
+        currentPlace: 0 // 当前这一步棋落子的位置（0~9）
       }],
       stepNumber: 0,
       isXNext: true
@@ -68,7 +69,10 @@ class Game extends React.Component {
     }
     squares[i] = this.state.isXNext ? 'X': 'O'
     this.setState({
-      history: history.concat([{squares}]),
+      history: history.concat([{
+        squares,
+        currentPlace: i
+      }]),
       stepNumber: history.length,
       isXNext: !this.state.isXNext
     })
@@ -103,10 +107,11 @@ class Game extends React.Component {
     const winner = this.calculateWinner(current.squares)
     const moves = history.map((step, move) => {
       // move为数组中正在处理的当前元素的索引，即当前执行元素的index
-      const desc = move ? 'Move #' + move : 'Game start'
+      // step为当前执行此函数的history中的一项
+      const desc = move ? `${(move % 2) ? 'X' : 'O'} moved to (${parseInt((step.currentPlace / 3), 10) + 1}, ${(step.currentPlace % 3) + 1})` : 'Game start'
       return (
         <li key={move}>
-          <a href="#" onClick={() => {this.jumpTo(move)}}>{desc}</a>
+          <button onClick={() => {this.jumpTo(move)}}>{desc}</button>
         </li>
       )
     })
