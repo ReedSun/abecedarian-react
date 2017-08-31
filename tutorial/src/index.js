@@ -4,7 +4,7 @@ import './index.css';
 
 function Square (props) {
   return (
-    <button className="square" onClick={props.onClick}>
+    <button className={'square' + (props.highlight ? ' highlight' : '')} onClick={props.onClick}>
       {props.value}
     </button>
   )
@@ -13,7 +13,8 @@ function Square (props) {
 class Board extends React.Component {
   renderSquare(i) {
     return <Square 
-      value={this.props.squares[i]} 
+      value={this.props.squares[i]}
+      highlight={this.props.winLine.indexOf(i) !== -1 ? true : false}
       onClick={() => {this.props.onClick(i)}}
       key={i}
     />;
@@ -58,7 +59,7 @@ class Game extends React.Component {
   handleClick (i) {
     const history = this.state.history.slice(0, this.state.stepNumber + 1)
     const squares = history[history.length - 1].squares.slice()
-    if (this.calculateWinner(squares) || squares[i]) {
+    if (this.calculateWinner(squares).winner || squares[i]) {
       return
     }
     squares[i] = this.state.isXNext ? 'X': 'O'
@@ -89,16 +90,22 @@ class Game extends React.Component {
       const [a, b, c] = lines[i]
       // 如果一条线的value相同，且不为null，则说明其胜利
       if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-        return squares[a]
+        return {
+          winner: squares[a],
+          winLine: lines[i]
+        }
       }
     }
-    return null
+    return {
+      winner: null,
+      winLine: []
+    }
   }
 
   render() {
     let history = this.state.history.slice()
     const current = history[this.state.stepNumber]
-    const winner = this.calculateWinner(current.squares)
+    const win = this.calculateWinner(current.squares)
     let moves = history.map((step, move) => {
       // move为数组中正在处理的当前元素的索引，即当前执行元素的index
       // step为当前执行此函数的history中的一项
@@ -114,15 +121,15 @@ class Game extends React.Component {
       moves.reverse()
     }
     let status
-    if (winner) {
-      status = 'Winner: ' + winner
+    if (win.winner) {
+      status = 'Winner: ' + win.winner
     } else {
       status = 'Next player: ' + (this.state.isXNext ? 'X' : 'O')
     }
     return (
       <div className="game">
         <div className="game-board">
-          <Board squares={current.squares} onClick={(i) => {this.handleClick(i)}} />
+          <Board squares={current.squares} onClick={(i) => {this.handleClick(i)}} winLine={win.winLine} />
         </div>
         <div className="game-info">
           <div>{status}</div>
